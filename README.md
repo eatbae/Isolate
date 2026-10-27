@@ -1,119 +1,114 @@
-<div align="center">
-
 # Stem Splitter
 
-**Split any song into vocals, drums, bass, guitar, piano and more. Free, private, and on your own PC.**
+A free stem splitter for Windows. Give it a song and it separates the vocals, drums, bass,
+guitar, piano and everything else into their own tracks. It runs on your own computer, so
+nothing gets uploaded and there are no limits.
 
-[**⬇ Download for Windows**](../../releases/latest) · [How to use](#how-to-use-it) · [FAQ](#faq)
+**[Download the latest version](../../releases/latest)**
 
-![Stem Splitter: every stem of a song with waveforms, mute, solo and download buttons](docs/screenshot-results.png)
+![The results screen, with each stem's waveform and mute, solo and download buttons](docs/screenshot-results.png)
 
-</div>
+## Features
 
-## What it does
+- Splits a song into 6 stems: vocals, drums, bass, guitar, piano and other. There's also
+  a 4-stem mode if you only need vocals, drums, bass and the rest.
+- Can split a stem again into separate parts. If a song has one guitar on the left and
+  another on the right, you get each guitar as its own track.
+- Lets you listen before downloading. All the stems play together, and you can mute or
+  solo any of them to check how clean the separation is.
+- Works with mp3, wav, flac, m4a, ogg and most video files.
+- Saves stems as 24-bit WAV.
 
-Drop in a song and Stem Splitter uses AI to pull it apart into separate tracks ("stems"):
-**vocals, drums, bass, guitar, piano** and **everything else**. Use them to make karaoke or
-backing tracks, learn a part by ear, remix, sample, or practice along with the band minus your
-instrument.
+With an NVIDIA graphics card, a song takes about 20 to 40 seconds. Without one, it runs
+on the CPU and takes a few minutes.
 
-- 🎸 **Splits two guitars apart.** It doesn't stop at one "guitar" stem. When a song has, say,
-  a rhythm guitar on the left and a lead on the right, it separates them into their own tracks.
-- 🎧 **Listen before you download.** Every stem plays in sync, like a mini mixer, with
-  **mute** and **solo** on each track, so you can check the result first.
-- 🔒 **Private.** Everything runs on your computer. Your music is never uploaded anywhere.
-- 💸 **Free.** No account, no limits, no watermark, no subscription.
-- ⚡ **Fast on NVIDIA graphics cards:** about 20–40 seconds per song. It also works without
-  one, just slower (a few minutes per song).
-- 🎵 **Takes almost any file:** mp3, wav, flac, m4a, ogg, and even video files.
+## Installing
 
-## Download and install
+You need Windows 10 or 11 and about 6 GB of free space.
 
-> **Windows 10 or 11** · about 6 GB of free disk space · internet for the first start only
+1. Download the zip from the [releases page](../../releases/latest).
+2. Unzip it somewhere, for example your Desktop.
+3. Double-click `Stem Splitter.bat`.
 
-1. Download **`StemSplitter-vX.Y.Z.zip`** from the [**latest release**](../../releases/latest).
-2. **Unzip it** anywhere, for example to your Desktop (right-click → *Extract All*).
-3. Double-click **`Stem Splitter.bat`**.
+You don't need to install Python. The first launch downloads everything it needs by
+itself: about 3 GB if you have an NVIDIA card, or 1 GB otherwise. That takes a few
+minutes. After that it starts in a few seconds and works offline.
 
-That's it. You don't need to install Python or anything else. The first start sets everything up
-by itself (about 3 GB with an NVIDIA graphics card, about 1 GB without) and takes a few minutes.
-After that, the app opens in your browser within seconds and works offline.
+Windows may show a "Windows protected your PC" warning, since the app isn't signed.
+Click "More info" and then "Run anyway".
 
-> **Seeing "Windows protected your PC"?** Windows shows this for free apps that aren't
-> commercially signed. Click **More info → Run anyway**.
+## Using it
 
-## How to use it
+![The start screen, with a song picked and the model options](docs/screenshot-setup.png)
 
-![Choosing a song and options](docs/screenshot-setup.png)
-
-1. **Drop a song** onto the page, or click to pick a file.
-2. **Pick a model:**
-
-   | Model | You get | Best for |
-   |---|---|---|
-   | **6 stems** (default) | vocals, drums, bass, guitar, piano, other | most songs |
-   | **4 stems · Best** | vocals, drums, bass, other | the cleanest vocals and drums (about 4× slower) |
-   | **4 stems · Fast** | vocals, drums, bass, other | quick results |
-
-3. **Split into separate parts** (optional): tick an instrument, and its stem is split again into
-   the individual parts based on where each one sits in the stereo mix (left, center or right).
-   Guitar is ticked by default.
-4. Click **Split stems** and wait for the progress bar.
-5. **Check the result:** press <kbd>Space</kbd> to play and click any waveform to jump.
-   **M** mutes a track, **S** solos it (<kbd>Ctrl</kbd>-click **S** to solo several).
-6. **Download** the stems you want one by one with the ⬇ icon, or all at once with
-   **Download all**. Files are 24-bit WAV.
+1. Drag a song onto the page, or click to choose one.
+2. Pick a model:
+   - **6 stems** (default) gives vocals, drums, bass, guitar, piano and other.
+   - **4 stems, best** gives vocals, drums, bass and other, with the cleanest results.
+     It's about 4 times slower.
+   - **4 stems, fast** gives the same four stems, quickly.
+3. Under "Split into separate parts", tick any instrument you want split further. Guitar
+   is ticked by default.
+4. Click "Split stems".
+5. Press Space to play, and click a waveform to jump to that point. M mutes a track and
+   S solos it. Ctrl-click S to solo more than one.
+6. Download the stems you want with the arrow next to each one, or get them all with
+   "Download all".
 
 ## FAQ
 
 **Does it work on Mac or Linux?**
-Not yet. It's Windows-only for now.
+Not yet, it's Windows only for now.
 
 **Do I need a graphics card?**
-No. With an NVIDIA card it's fast. Without one it runs on your processor and takes a few
-minutes per song. AMD and Intel graphics cards also use the processor.
+No. An NVIDIA card makes it much faster, but it works without one. AMD and Intel
+graphics cards aren't supported, so on those it uses the CPU.
 
 **Why didn't my two guitars get separated?**
-Parts are told apart by where they sit in the stereo mix. If both guitars are panned to the
-same place (for example both in the middle), they can't be split this way, and the app says so.
+Parts are separated by where they sit in the stereo mix. If both guitars are panned to
+the same place, for example both in the middle, they can't be pulled apart this way. The
+app tells you when that happens.
 
-**Where's the violin / synth / saxophone stem?**
-The AI models know vocals, drums, bass, guitar and piano. Everything else ends up in "other".
+**Where's the violin, synth or sax?**
+The models only know vocals, drums, bass, guitar and piano. Anything else ends up in
+"other".
 
 **How do I uninstall it?**
-Delete the app folder and the folder `%USERPROFILE%\.stemsplitter`, which holds the downloaded
-Python, PyTorch and AI models.
+Delete the app folder, and also the `.stemsplitter` folder in your user folder
+(`%USERPROFILE%\.stemsplitter`). That's where Python, PyTorch and the models are stored.
 
-**Something went wrong.**
-Close the black window and double-click `Stem Splitter.bat` again. If setup failed halfway
-(for example because the internet dropped), it retries automatically. Still stuck?
-[Open an issue](../../issues) and paste the text from the black window.
+**It didn't work.**
+Close the black window and run `Stem Splitter.bat` again. If setup got interrupted, it
+starts over by itself. If it still fails, [open an issue](../../issues) and paste in what
+the black window says.
 
 ## How it works
 
-1. **AI separation:** [Demucs](https://github.com/facebookresearch/demucs) (Meta AI's
-   Hybrid Transformer models) splits the mix into instrument stems.
-2. **Part splitting:** a stem is split again by stereo position. The app finds the pan positions
-   where most of the sound sits and unmixes every frequency between them. For two parts recorded
-   separately and panned hard left and right (very common for rock guitars), it detects that the
-   two channels are unrelated and separates them exactly. The parts always add back up to the
-   original stem.
+The separation is done by [Demucs](https://github.com/facebookresearch/demucs), Meta's
+open source source-separation model.
 
-<details>
-<summary><b>For developers</b></summary>
+Splitting a stem into parts is done afterwards, based on stereo position. The app finds
+where most of the sound sits between left and right, and unmixes each frequency between
+those positions. Guitars that were recorded separately and panned hard left and right are
+a common case. There, the two channels have almost nothing in common, so the app takes
+them as two separate parts. The parts always add back up to the original stem.
 
-| File | What it is |
-|---|---|
-| `engine.py` | The separation pipeline. Also works from the command line: `python engine.py song.mp3 --split guitar` |
-| `app.py` | A local FastAPI server that runs splits and serves the page |
-| `static/index.html` | The whole interface: layout, mixer, waveforms (no build step) |
-| `setup.bat` | A self-contained installer. Uses [uv](https://github.com/astral-sh/uv) to fetch Python 3.12, then PyTorch (CUDA 12.8 build with an NVIDIA card, CPU build otherwise) and `requirements.txt` into `%USERPROFILE%\.stemsplitter` |
-| `config.json` | The version, plus optional donation and project links shown in the app |
-| `make_release.ps1` | Builds the release zip into `dist\` |
+## Development
 
-</details>
+The app is a small local web server with a single HTML page as the interface.
 
-## Credits and license
+- `engine.py` does the separation. You can also run it from the command line:
+  `python engine.py song.mp3 --split guitar`
+- `app.py` is the server (FastAPI). It runs the splits and serves the page.
+- `static/index.html` is the whole interface: layout, mixer and waveforms. There's no
+  build step.
+- `setup.bat` is the installer. It uses [uv](https://github.com/astral-sh/uv) to get
+  Python 3.12, then installs PyTorch (the CUDA build if there's an NVIDIA card) and
+  `requirements.txt` into `%USERPROFILE%\.stemsplitter`.
+- `config.json` holds the version number and the links shown in the app.
+- `make_release.ps1` builds the release zip into `dist\`.
 
-Separation models by [Demucs](https://github.com/facebookresearch/demucs) (Meta AI, MIT license).
-Stem Splitter is MIT licensed; see [`LICENSE`](LICENSE). Made by **eatbae**.
+## License
+
+MIT, see [LICENSE](LICENSE). Separation models by
+[Demucs](https://github.com/facebookresearch/demucs) (also MIT).
