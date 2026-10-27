@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stem Splitter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0c10;
+    --surface: #13151b;
+    --surface-2: #1a1d25;
+    --surface-3: #22252f;
+    --border: #262a35;
+    --text: #ececf1;
+    --muted: #8a8fa0;
+    --faint: #5b6070;
+    --radius: 16px;
+    --vocals: #f472b6; --drums: #fbbf24; --bass: #a78bfa;
+    --guitar: #34d399; --piano: #38bdf8; --other: #94a3b8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: radial-gradient(1200px 600px at 50% -200px, #1b1830 0%, transparent 70%), var(--bg);
+    color: var(--text);
+    font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  a { color: inherit; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
+
+  /* Header */
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+  .logo { display: flex; align-items: center; gap: 3px; height: 24px; }
+  .logo span { width: 4px; border-radius: 2px; }
+  .badge {
+    display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    color: var(--muted); font-size: 12.5px;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .coffee {
+    display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 500; text-decoration: none; color: #fcd34d;
+    background: color-mix(in srgb, var(--drums) 10%, var(--surface)); border: 1px solid #5a4714;
+    transition: background .15s, border-color .15s;
+  }
+  .coffee:hover { background: color-mix(in srgb, var(--drums) 18%, var(--surface)); border-color: #8a6d1c; }
+  .credits { text-align: center; color: var(--faint); font-size: 12px; margin: 22px 0 0; }
+  .credits a { color: var(--muted); text-decoration: none; }
+  .credits a:hover { color: var(--text); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--guitar); box-shadow: 0 0 10px var(--guitar); }
+  .dot.cpu { background: var(--drums); box-shadow: 0 0 10px var(--drums); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  [hidden] { display: none !important; }
+
+  /* Setup */
+  .drop {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    min-height: 220px; padding: 32px; margin: 8px; border-radius: 12px;
+    border: 1.5px dashed var(--border); background: var(--bg);
+    text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .drop:hover, .drop.over { border-color: #4b4f63; background: #0e1015; }
+  .drop.over { border-color: var(--bass); }
+  .drop .icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--surface-2); border: 1px solid var(--border); margin-bottom: 10px; color: var(--muted); }
+  .drop h2 { margin: 0; font-size: 16px; font-weight: 600; }
+  .drop p { margin: 0; color: var(--muted); font-size: 13px; }
+  .drop.has-file { border-style: solid; border-color: var(--border); min-height: 0; flex-direction: row;
+    justify-content: flex-start; text-align: left; gap: 14px; padding: 18px 20px; }
+  .drop.has-file .icon { margin: 0; color: var(--text); }
+  .drop.has-file .file-meta { flex: 1; min-width: 0; }
+  .drop.has-file h2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
+  .change { color: var(--muted); font-size: 13px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); }
+
+  .options { padding: 12px 24px 24px; display: grid; gap: 22px; }
+  .label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px; }
+  .hint { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+
+  .segmented { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .seg {
+    text-align: left; padding: 12px 14px; border-radius: 10px;
+    background: var(--surface-2); border: 1px solid var(--border); transition: border-color .15s, background .15s;
+  }
+  .seg:hover { border-color: #3a3e4d; }
+  .seg strong { display: block; font-weight: 600; font-size: 13.5px; }
+  .seg small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .seg[aria-pressed="true"] { border-color: var(--text); background: var(--surface-3); }
+
+  .row2 { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: start; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 12px;
+    border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border);
+    font-size: 13px; text-transform: capitalize; transition: all .15s;
+  }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); opacity: .35; transition: opacity .15s; }
+  .chip[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, var(--surface-2)); }
+  .chip[aria-pressed="true"] i { opacity: 1; }
+
+  .stepper { display: inline-flex; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; }
+  .stepper button { width: 36px; height: 36px; background: none; border: 0; color: var(--muted); font-size: 18px; }
+  .stepper button:hover { color: var(--text); }
+  .stepper span { min-width: 28px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--text); color: #0b0c10; border: 0; border-radius: 10px;
+    padding: 12px 20px; font-weight: 600; transition: transform .1s, opacity .15s; text-decoration: none;
+  }
+  .primary:hover { opacity: .9; }
+  .primary:active { transform: scale(.98); }
+  .primary:disabled { opacity: .25; cursor: not-allowed; }
+  .ghost {
+    display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 16px; color: var(--muted); font-weight: 500; text-decoration: none;
+  }
+  .ghost:hover { color: var(--text); border-color: #3a3e4d; }
+  .go { width: 100%; padding: 15px; font-size: 15px; }
+  .error { margin: 0 24px 16px; padding: 12px 14px; border-radius: 10px; background: #2a1418; border: 1px solid #5c2430; color: #fda4af; font-size: 13px; white-space: pre-wrap; }
+
+  /* Progress */
+  .progress { padding: 40px 32px; text-align: center; }
+  .progress h2 { margin: 0 0 4px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .progress p { margin: 0 0 28px; color: var(--muted); }
+  .bar { height: 6px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
+  .bar div {
+    height: 100%; width: 0; border-radius: 99px; transition: width .4s ease;
+    background: linear-gradient(90deg, var(--vocals), var(--drums), var(--guitar), var(--piano), var(--bass));
+    background-size: 880px 100%;
+  }
+  .pct { margin-top: 12px; color: var(--faint); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+  /* Results */
+  .res-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 24px; border-bottom: 1px solid var(--border); }
+  .res-head h2 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .res-head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .res-head .actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .res-head > div:first-child { min-width: 0; }
+
+  .transport { display: flex; align-items: center; gap: 16px; padding: 18px 24px; border-bottom: 1px solid var(--border); }
+  .play {
+    width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--text); color: #0b0c10;
+    display: grid; place-items: center; flex-shrink: 0; transition: transform .1s;
+  }
+  .play:active { transform: scale(.95); }
+  .play:disabled { opacity: .3; cursor: wait; }
+  .time { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; min-width: 92px; }
+  .time b { color: var(--text); font-weight: 500; }
+  .seek { flex: 1; height: 20px; display: flex; align-items: center; cursor: pointer; }
+  .seek div { height: 4px; width: 100%; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
+  .seek span { display: block; height: 100%; width: 0; background: var(--text); }
+
+  .stems { padding: 8px 12px 12px; }
+  .stem {
+    display: grid; grid-template-columns: 150px 1fr auto; align-items: center; gap: 16px;
+    padding: 8px 12px; border-radius: 10px; transition: opacity .2s, background .15s;
+  }
+  .stem:hover { background: var(--surface-2); }
+  .stem.off .wave, .stem.off .name { opacity: .35; }
+  .name { display: flex; align-items: center; gap: 10px; min-width: 0; text-transform: capitalize; font-weight: 500; }
+  .name i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex-shrink: 0; }
+  .name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .name small { color: var(--faint); font-weight: 400; text-transform: none; }
+  .stem.part .name { padding-left: 14px; font-weight: 400; color: var(--muted); }
+  .stem.part .name i { width: 7px; height: 7px; border-radius: 50%; }
+  .wave { height: 44px; position: relative; cursor: pointer; }
+  .wave canvas { width: 100%; height: 100%; display: block; }
+  .wave.loading::after {
+    content: ""; position: absolute; inset: 14px 0; border-radius: 6px;
+    background: linear-gradient(90deg, var(--surface-2), var(--surface-3), var(--surface-2));
+    background-size: 200% 100%; animation: shimmer 1.2s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  .ctrls { display: flex; align-items: center; gap: 6px; }
+  .tog {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
+    font-size: 12px; font-weight: 600; color: var(--muted); transition: all .12s;
+  }
+  .tog:hover { color: var(--text); }
+  .tog.m[aria-pressed="true"] { background: #3a1d24; border-color: #7f2d3d; color: #fda4af; }
+  .tog.s[aria-pressed="true"] { background: #3a3114; border-color: #8a6d1c; color: #fcd34d; }
+  .dl {
+    width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; margin-left: 4px;
+    color: var(--muted); border: 1px solid transparent; transition: all .12s;
+  }
+  .dl:hover { color: var(--text); background: var(--surface-3); border-color: var(--border); }
+  .silent { font-size: 11px; color: var(--faint); border: 1px solid var(--border); border-radius: 6px; padding: 1px 6px; margin-left: 4px; text-transform: none; font-weight: 400; }
+
+  .notes { padding: 0 24px 20px; color: var(--muted); font-size: 12.5px; }
+  .notes p { margin: 4px 0; }
+  footer { text-align: center; color: var(--faint); font-size: 12px; margin-top: 18px; }
+  kbd { font: inherit; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--border); background: var(--surface); }
+
+  @media (max-width: 640px) {
+    .segmented { grid-template-columns: 1fr; }
+    .row2 { grid-template-columns: 1fr; gap: 22px; }
+    .stem { grid-template-columns: 1fr auto; }
+    .stem .wave { grid-column: 1 / -1; grid-row: 2; }
+    .res-head { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo">
+        <span style="height:12px;background:var(--vocals)"></span><span style="height:22px;background:var(--drums)"></span>
+        <span style="height:16px;background:var(--guitar)"></span><span style="height:24px;background:var(--piano)"></span>
+        <span style="height:10px;background:var(--bass)"></span>
+      </div>
+      Stem Splitter
+    </div>
+    <div class="header-right">
+      <a class="coffee" id="donate" target="_blank" rel="noopener" hidden>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8zM6 2v3M10 2v3M14 2v3"/></svg>
+        Buy me a coffee
+      </a>
+      <div class="badge"><span class="dot" id="dot"></span><span id="gpu">Connecting…</span></div>
+    </div>
+  </header>
+
+  <!-- 1. Choose song + options -->
+  <section class="card" id="setup">
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept="audio/*,video/*" hidden>
+      <div class="icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+      </div>
+      <div class="file-meta">
+        <h2 id="drop-title">Drop a song here</h2>
+        <p id="drop-sub">or click to browse · mp3, wav, flac, m4a, even video</p>
+      </div>
+      <span class="change" id="change" hidden>Change</span>
+    </label>
+
+    <div class="error" id="error" hidden></div>
+
+    <div class="options">
+      <div>
+        <div class="label">Model</div>
+        <div class="segmented" id="models"></div>
+      </div>
+      <div class="row2">
+        <div>
+          <div class="label">Split into separate parts</div>
+          <div class="chips" id="chips"></div>
+          <div class="hint">Splits an instrument again by where each part is panned, e.g. a rhythm guitar on the left and a lead on the right become two tracks.</div>
+        </div>
+        <div>
+          <div class="label">Quality</div>
+          <div class="stepper">
+            <button id="minus" aria-label="Fewer passes">−</button>
+            <span id="passes">1</span>
+            <button id="plus" aria-label="More passes">+</button>
+          </div>
+          <div class="hint">passes</div>
+        </div>
+      </div>
+      <button class="primary go" id="go" disabled>Split stems</button>
+    </div>
+  </section>
+
+  <!-- 2. Working -->
+  <section class="card progress" id="working" hidden>
+    <h2 id="w-song"></h2>
+    <p id="w-msg">Starting</p>
+    <div class="bar"><div id="w-bar"></div></div>
+    <div class="pct" id="w-pct">0%</div>
+  </section>
+
+  <!-- 3. Results -->
+  <section class="card" id="results" hidden>
+    <div class="res-head">
+      <div>
+        <h2 id="r-song"></h2>
+        <p id="r-sub"></p>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="again">New song</button>
+        <a class="primary" id="zip" download>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M4 20h16"/></svg>
+          Download all
+        </a>
+      </div>
+    </div>
+    <div class="transport">
+      <button class="play" id="play" disabled aria-label="Play">
+        <svg id="i-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>
+        <svg id="i-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" hidden><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg>
+      </button>
+      <div class="time" id="time"><b>0:00</b> / 0:00</div>
+      <div class="seek" id="seek"><div><span id="seek-fill"></span></div></div>
+    </div>
+    <div class="stems" id="stems"></div>
+    <div class="notes" id="notes"></div>
+  </section>
+
+  <p class="credits" id="credits">Free &amp; open source · powered by <a href="https://github.com/facebookresearch/demucs" target="_blank" rel="noopener">Demucs</a></p>
+  <footer id="footer" hidden><kbd>Space</kbd> play / pause · click a waveform to jump · <b>M</b> mute · <b>S</b> solo · <kbd>Ctrl</kbd>-click <b>S</b> to solo several</footer>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const COLORS = { vocals: "--vocals", drums: "--drums", bass: "--bass", guitar: "--guitar", piano: "--piano", other: "--other" };
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const colorOf = (base) => css(COLORS[base] || "--other");
+const ORDER = ["vocals", "drums", "bass", "guitar", "piano", "other"];
+const MODELS = [
+  { id: "htdemucs_6s", title: "6 stems", sub: "Vocals, drums, bass, guitar, piano, other" },
+  { id: "htdemucs_ft", title: "4 stems · Best", sub: "Cleanest result, about 4× slower" },
+  { id: "htdemucs", title: "4 stems · Fast", sub: "Vocals, drums, bass, other" },
+];
+const ICON_DL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 10l6 6 6-6M4 20h16"/></svg>';
+
+const state = { info: null, file: null, model: "htdemucs_6s", passes: 1, split: new Set(["guitar"]) };
+
+/* ---------- Setup ---------- */
+async function init() {
+  try {
+    state.info = await (await fetch("/api/info")).json();
+    $("#gpu").textContent = state.info.device === "cuda" ? state.info.gpu.replace(/^NVIDIA (GeForce )?/, "") :"CPU (no GPU found)";
+    $("#dot").classList.toggle("cpu", state.info.device !== "cuda");
+    if (state.info.donate_url) { $("#donate").href = state.info.donate_url; $("#donate").hidden = false; }
+    const project = state.info.project_url
+      ? ` · <a href="${encodeURI(state.info.project_url)}" target="_blank" rel="noopener">project page</a>` : "";
+    $("#credits").insertAdjacentHTML("afterbegin", `Stem Splitter v${escapeHtml(state.info.version || "")} · `);
+    $("#credits").insertAdjacentHTML("beforeend", project);
+  } catch { $("#gpu").textContent = "Not connected"; }
+  renderModels();
+  renderChips();
+}
+
+function renderModels() {
+  $("#models").innerHTML = "";
+  for (const m of MODELS) {
+    const b = document.createElement("button");
+    b.className = "seg";
+    b.setAttribute("aria-pressed", m.id === state.model);
+    b.innerHTML = `<strong>${m.title}</strong><small>${m.sub}</small>`;
+    b.onclick = () => { state.model = m.id; renderModels(); renderChips(); };
+    $("#models").append(b);
+  }
+}
+
+function renderChips() {
+  const options = state.info?.splittable?.[state.model] ?? [];
+  for (const s of [...state.split]) if (!options.includes(s)) state.split.delete(s);
+  $("#chips").innerHTML = "";
+  for (const name of options) {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.style.setProperty("--c", colorOf(name));
+    b.setAttribute("aria-pressed", state.split.has(name));
+    b.innerHTML = `<i></i>${name}`;
+    b.onclick = () => { state.split.has(name) ? state.split.delete(name) : state.split.add(name); renderChips(); };
+    $("#chips").append(b);
+  }
+}
+
+function setPasses(n) { state.passes = Math.max(1, Math.min(5, n)); $("#passes").textContent = state.passes; }
+$("#minus").onclick = () => setPasses(state.passes - 1);
+$("#plus").onclick = () => setPasses(state.passes + 1);
+
+function setFile(f) {
+  if (!f) return;
+  state.file = f;
+  $("#drop").classList.add("has-file");
+  $("#drop-title").textContent = f.name;
+  $("#drop-sub").textContent = `${(f.size / 1048576).toFixed(1)} MB`;
+  $("#change").hidden = false;
+  $("#go").disabled = false;
+  $("#error").hidden = true;
+}
+$("#file").onchange = (e) => setFile(e.target.files[0]);
+const drop = $("#drop");
+drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); setFile(e.dataTransfer.files[0]); };
+
+function show(id) {
+  for (const s of ["setup", "working", "results"]) $("#" + s).hidden = s !== id;
+  $("#footer").hidden = id !== "results";
+}
+
+/* ---------- Split ---------- */
+$("#go").onclick = async () => {
+  const fd = new FormData();
+  fd.append("file", state.file);
+  fd.append("model", state.model);
+  fd.append("passes", state.passes);
+  fd.append("split", [...state.split].join(","));
+  $("#w-song").textContent = state.file.name.replace(/\.[^.]+$/, "");
+  setProgress(0, "Uploading");
+  show("working");
+  try {
+    const res = await fetch("/api/split", { method: "POST", body: fd });
+    if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
+    poll((await res.json()).id);
+  } catch (e) { fail(e.message); }
+};
+
+function setProgress(frac, msg) {
+  $("#w-bar").style.width = `${Math.round(frac * 100)}%`;
+  $("#w-pct").textContent = `${Math.round(frac * 100)}%`;
+  $("#w-msg").textContent = msg;
+}
+
+function fail(msg) {
+  $("#error").textContent = msg;
+  $("#error").hidden = false;
+  show("setup");
+}
+
+async function poll(id) {
+  const job = await (await fetch(`/api/jobs/${id}`)).json();
+  if (job.state === "running") {
+    setProgress(job.progress, job.message);
+    return setTimeout(() => poll(id), 400);
+  }
+  if (job.state === "error") return fail(job.message);
+  setProgress(1, "Loading preview");
+  showResults(job);
+}
+
+/* ---------- Results / mixer ---------- */
+let ctx, stems = [], sources = [], playing = false, startAt = 0, offset = 0, duration = 0;
+
+function showResults(job) {
+  stopAudio();
+  offset = 0; duration = 0;
+  $("#r-song").textContent = job.song;
+  $("#zip").href = `/api/jobs/${job.id}/zip`;
+  $("#notes").innerHTML = (job.notes || []).map((n) => `<p>${escapeHtml(n)}</p>`).join("");
+  $("#play").disabled = true;
+  ctx = ctx || new AudioContext();
+
+  stems = job.stems.map((s) => {
+    const m = s.name.match(/^(.+?) \((.+)\)$/);
+    const base = m ? m[1] : s.name;
+    return { ...s, base, part: m ? m[2] : null, color: colorOf(base), muted: !!m, solo: false };
+  });
+  // Fixed instrument order, each instrument's parts right below it.
+  const rank = (s) => (ORDER.indexOf(s.base) + 1 || ORDER.length + 1) * 2 + (s.part ? 1 : 0);
+  stems.sort((a, b) => rank(a) - rank(b));
+  const parts = stems.filter((s) => s.part).length;
+  $("#r-sub").textContent = `${stems.length - parts} stems${parts ? ` + ${parts} parts` : ""}`;
+  if (parts) $("#notes").insertAdjacentHTML("afterbegin",
+    "<p>Parts start muted so the full mix plays at normal volume. Solo one to hear it on its own.</p>");
+
+  $("#stems").innerHTML = "";
+  for (const s of stems) $("#stems").append(stemRow(s));
+  show("results");
+  applyGains();
+
+  Promise.all(stems.map(loadStem)).then(() => {
+    duration = Math.max(...stems.map((s) => s.buffer.duration));
+    $("#r-sub").textContent += ` · ${fmt(duration)}`;
+    $("#play").disabled = false;
+    updateTime();
+  }).catch((e) => fail("Could not load the preview: " + e.message));
+}
+
+function stemRow(s) {
+  const row = document.createElement("div");
+  row.className = "stem" + (s.part ? " part" : "");
+  row.style.setProperty("--c", s.color);
+  row.innerHTML = `
+    <div class="name"><i></i><span>${escapeHtml(s.part || s.base)}</span></div>
+    <div class="wave loading"><canvas></canvas></div>
+    <div class="ctrls">
+      <button class="tog m" title="Mute">M</button>
+      <button class="tog s" title="Solo (Ctrl-click to solo several)">S</button>
+      <a class="dl" href="${s.url}?download=1" download title="Download WAV">${ICON_DL}</a>
+    </div>`;
+  s.row = row;
+  s.canvas = row.querySelector("canvas");
+  row.querySelector(".m").onclick = () => { s.muted = !s.muted; applyGains(); };
+  row.querySelector(".s").onclick = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      s.solo = !s.solo;  // Ctrl-click adds to / removes from the soloed set
+    } else {
+      // Plain click solos only this one; clicking the only soloed track again clears solo.
+      const onlyThis = s.solo && stems.filter((x) => x.solo).length === 1;
+      stems.forEach((x) => (x.solo = false));
+      s.solo = !onlyThis;
+    }
+    applyGains();
+  };
+  row.querySelector(".wave").onclick = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    seek(((e.clientX - r.left) / r.width) * duration);
+  };
+  return row;
+}
+
+async function loadStem(s) {
+  const data = await (await fetch(s.url)).arrayBuffer();
+  s.buffer = await ctx.decodeAudioData(data);
+  s.gain = ctx.createGain();
+  s.gain.connect(ctx.destination);
+  s.row.querySelector(".wave").classList.remove("loading");
+  computePeaks(s);
+  applyGains();
+}
+
+function computePeaks(s) {
+  const w = s.canvas.clientWidth, dpr = devicePixelRatio || 1;
+  s.canvas.width = w * dpr; s.canvas.height = s.canvas.clientHeight * dpr;
+  const bars = Math.floor(w / 3), chans = [];
+  for (let c = 0; c < s.buffer.numberOfChannels; c++) chans.push(s.buffer.getChannelData(c));
+  const len = chans[0].length, per = len / bars, step = Math.max(1, Math.floor(per / 200));
+  s.peaks = new Float32Array(bars);
+  for (let b = 0; b < bars; b++) {
+    let max = 0;
+    for (let i = Math.floor(b * per); i < Math.floor((b + 1) * per); i += step)
+      for (const ch of chans) { const v = Math.abs(ch[i]); if (v > max) max = v; }
+    s.peaks[b] = max;
+  }
+  const loudest = Math.max(...s.peaks);
+  if (loudest < 0.01 && !s.row.querySelector(".silent"))
+    s.row.querySelector(".name span").insertAdjacentHTML("afterend", '<span class="silent">silent</span>');
+  draw(s);
+}
+
+function draw(s) {
+  if (!s.peaks) return;
+  const g = s.canvas.getContext("2d"), W = s.canvas.width, H = s.canvas.height;
+  const dpr = devicePixelRatio || 1, bw = 2 * dpr, gap = 1 * dpr;
+  const played = duration ? pos() / duration : 0;
+  g.clearRect(0, 0, W, H);
+  s.peaks.forEach((p, i) => {
+    const h = Math.max(2 * dpr, Math.pow(Math.min(p, 1), 0.7) * H);
+    g.fillStyle = s.color;
+    g.globalAlpha = i / s.peaks.length < played ? 1 : 0.32;
+    g.beginPath();
+    g.roundRect(i * (bw + gap), (H - h) / 2, bw, h, dpr);
+    g.fill();
+  });
+}
+
+function applyGains() {
+  const anySolo = stems.some((s) => s.solo);
+  for (const s of stems) {
+    const on = anySolo ? s.solo : !s.muted;
+    s.gain?.gain.setTargetAtTime(on ? 1 : 0, ctx.currentTime, 0.015);
+    s.row.classList.toggle("off", !on);
+    s.row.querySelector(".m").setAttribute("aria-pressed", s.muted);
+    s.row.querySelector(".s").setAttribute("aria-pressed", s.solo);
+  }
+}
+
+/* ---------- Transport ---------- */
+const pos = () => playing ? Math.min(ctx.currentTime - startAt, duration) : offset;
+
+function play() {
+  if (ctx.state === "suspended") ctx.resume();
+  const t0 = ctx.currentTime + 0.05;
+  sources = stems.map((s) => {
+    const src = ctx.createBufferSource();
+    src.buffer = s.buffer;
+    src.connect(s.gain);
+    src.start(t0, offset);
+    return src;
+  });
+  startAt = t0 - offset;
+  playing = true;
+  setIcon();
+  requestAnimationFrame(tick);
+}
+
+function stopAudio() {
+  for (const src of sources) { try { src.stop(); } catch {} }
+  sources = [];
+  playing = false;
+  setIcon();
+}
+
+function pause() { offset = pos(); stopAudio(); }
+
+function seek(t) {
+  if (!duration) return;
+  const wasPlaying = playing;
+  stopAudio();
+  offset = Math.max(0, Math.min(t, duration - 0.01));
+  if (wasPlaying) play(); else { stems.forEach(draw); updateTime(); }
+}
+
+function tick() {
+  if (!playing) return;
+  if (pos() >= duration) { stopAudio(); offset = 0; }
+  stems.forEach(draw);
+  updateTime();
+  if (playing) requestAnimationFrame(tick);
+}
+
+function updateTime() {
+  $("#time").innerHTML = `<b>${fmt(pos())}</b> / ${fmt(duration)}`;
+  $("#seek-fill").style.width = `${duration ? (pos() / duration) * 100 : 0}%`;
+}
+
+// SVG elements have no .hidden property, so toggle the attribute itself.
+function setIcon() {
+  $("#i-play").toggleAttribute("hidden", playing);
+  $("#i-pause").toggleAttribute("hidden", !playing);
+  $("#play").setAttribute("aria-label", playing ? "Pause" : "Play");
+}
+
+$("#play").onclick = () => (playing ? pause() : play());
+$("#seek").onclick = (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  seek(((e.clientX - r.left) / r.width) * duration);
+};
+$("#again").onclick = () => { stopAudio(); show("setup"); };
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !$("#results").hidden && !$("#play").disabled) {
+    e.preventDefault();
+    playing ? pause() : play();
+  }
+});
+addEventListener("resize", () => stems.forEach((s) => s.buffer && computePeaks(s)));
+
+const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+init();
+</script>
+</body>
+</html>

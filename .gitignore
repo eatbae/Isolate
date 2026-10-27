@@ -1,0 +1,7 @@
+# Your own results and temporary files
+outputs/
+.preview/
+dist/
+__pycache__/
+*.pyc
+.claude/

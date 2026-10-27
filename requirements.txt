@@ -1,0 +1,8 @@
+# PyTorch is installed separately (GPU build) by setup.bat
+numpy<2
+demucs
+soundfile
+imageio-ffmpeg
+fastapi
+uvicorn
+python-multipart
