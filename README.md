@@ -1,6 +1,6 @@
-# Stem Splitter
+# Isolate
 
-A free stem splitter for Windows. Give it a song and it separates the vocals, drums, bass,
+Isolate is a free stem splitter for Windows. Give it a song and it separates the vocals, drums, bass,
 guitar, piano and everything else into their own tracks. It runs on your own computer, so
 nothing gets uploaded and there are no limits.
 
@@ -28,7 +28,7 @@ You need Windows 10 or 11 and about 6 GB of free space.
 
 1. Download the zip from the [releases page](../../releases/latest).
 2. Unzip it somewhere, for example your Desktop.
-3. Double-click `Stem Splitter.bat`.
+3. Double-click `Isolate.bat`.
 
 You don't need to install Python. The first launch downloads everything it needs by
 itself: about 3 GB if you have an NVIDIA card, or 1 GB otherwise. That takes a few
@@ -74,11 +74,13 @@ The models only know vocals, drums, bass, guitar and piano. Anything else ends u
 "other".
 
 **How do I uninstall it?**
-Delete the app folder, and also the `.stemsplitter` folder in your user folder
-(`%USERPROFILE%\.stemsplitter`). That's where Python, PyTorch and the models are stored.
+Delete the app folder, and also the `.isolate` folder in your user folder
+(`%USERPROFILE%\.isolate`). That's where Python, PyTorch and the models are stored. If you
+installed version 1.0.0, back when the app was called Stem Splitter, that folder is named
+`.stemsplitter` instead.
 
 **It didn't work.**
-Close the black window and run `Stem Splitter.bat` again. If setup got interrupted, it
+Close the black window and run `Isolate.bat` again. If setup got interrupted, it
 starts over by itself. If it still fails, [open an issue](../../issues) and paste in what
 the black window says.
 
@@ -104,7 +106,7 @@ The app is a small local web server with a single HTML page as the interface.
   build step.
 - `setup.bat` is the installer. It uses [uv](https://github.com/astral-sh/uv) to get
   Python 3.12, then installs PyTorch (the CUDA build if there's an NVIDIA card) and
-  `requirements.txt` into `%USERPROFILE%\.stemsplitter`.
+  `requirements.txt` into `%USERPROFILE%\.isolate`.
 - `config.json` holds the version number and the links shown in the app.
 - `make_release.ps1` builds the release zip into `dist\`.
 

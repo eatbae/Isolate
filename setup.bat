@@ -1,18 +1,18 @@
 @echo off
 setlocal
-rem One-time install. Downloads everything Stem Splitter needs (its own private Python,
+rem One-time install. Downloads everything Isolate needs (its own private Python,
 rem PyTorch, Demucs) into one folder. Nothing is installed system-wide; to uninstall,
-rem delete %USERPROFILE%\.stemsplitter
+rem delete %USERPROFILE%\.isolate
 
-if "%STEMSPLITTER_HOME%"=="" set "STEMSPLITTER_HOME=%USERPROFILE%\.stemsplitter"
-set "UV=%STEMSPLITTER_HOME%\uv\uv.exe"
-set "VENV=%STEMSPLITTER_HOME%\venv"
-set "UV_PYTHON_INSTALL_DIR=%STEMSPLITTER_HOME%\python"
+if "%ISOLATE_HOME%"=="" set "ISOLATE_HOME=%USERPROFILE%\.isolate"
+set "UV=%ISOLATE_HOME%\uv\uv.exe"
+set "VENV=%ISOLATE_HOME%\venv"
+set "UV_PYTHON_INSTALL_DIR=%ISOLATE_HOME%\python"
 set "UV_NO_CACHE=1"
 
 echo.
-echo  Stem Splitter setup
-echo  -------------------
+echo  Isolate setup
+echo  -------------
 echo  This downloads about 3 GB with an NVIDIA graphics card, about 1 GB without.
 echo  It only happens once.
 echo.
@@ -21,9 +21,9 @@ if exist "%UV%" goto :have_uv
 echo [1/4] Downloading the installer tool...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';" ^
-  "$zip = Join-Path $env:TEMP 'stemsplitter-uv.zip';" ^
+  "$zip = Join-Path $env:TEMP 'isolate-uv.zip';" ^
   "Invoke-WebRequest 'https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-pc-windows-msvc.zip' -OutFile $zip;" ^
-  "Expand-Archive $zip -DestinationPath '%STEMSPLITTER_HOME%\uv' -Force; Remove-Item $zip"
+  "Expand-Archive $zip -DestinationPath '%ISOLATE_HOME%\uv' -Force; Remove-Item $zip"
 if errorlevel 1 goto :fail
 :have_uv
 

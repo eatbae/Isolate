@@ -1,4 +1,4 @@
-"""Local web app for the stem splitter. Run it and it opens in your browser."""
+"""Isolate: local web app for splitting songs into stems. Run it and it opens in your browser."""
 
 import json
 import os
@@ -142,9 +142,9 @@ def _free_port(start):
 
 if __name__ == "__main__":
     shutil.rmtree(PREVIEW_ROOT, ignore_errors=True)
-    port = _free_port(int(os.environ.get("STEMSPLITTER_PORT", 7860)))
+    port = _free_port(int(os.environ.get("ISOLATE_PORT", 7860)))
     url = f"http://127.0.0.1:{port}"
-    print(f"Stem Splitter running at {url}")
-    if not os.environ.get("STEMSPLITTER_NO_BROWSER"):
+    print(f"Isolate running at {url}")
+    if not os.environ.get("ISOLATE_NO_BROWSER"):
         threading.Timer(1.0, webbrowser.open, [url]).start()
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")

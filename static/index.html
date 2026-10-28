@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stem Splitter</title>
+<title>Isolate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -219,7 +219,7 @@
         <span style="height:16px;background:var(--guitar)"></span><span style="height:24px;background:var(--piano)"></span>
         <span style="height:10px;background:var(--bass)"></span>
       </div>
-      Stem Splitter
+      Isolate
     </div>
     <div class="header-right">
       <a class="coffee" id="donate" target="_blank" rel="noopener" hidden>
@@ -334,7 +334,7 @@ async function init() {
     if (state.info.donate_url) { $("#donate").href = state.info.donate_url; $("#donate").hidden = false; }
     const project = state.info.project_url
       ? ` · <a href="${encodeURI(state.info.project_url)}" target="_blank" rel="noopener">project page</a>` : "";
-    $("#credits").insertAdjacentHTML("afterbegin", `Stem Splitter v${escapeHtml(state.info.version || "")} · `);
+    $("#credits").insertAdjacentHTML("afterbegin", `Isolate v${escapeHtml(state.info.version || "")} · `);
     $("#credits").insertAdjacentHTML("beforeend", project);
   } catch { $("#gpu").textContent = "Not connected"; }
   renderModels();
